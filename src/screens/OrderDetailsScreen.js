@@ -186,21 +186,17 @@ const OrderDetailsScreen = ({ navigation, route }) => {
           </View>
         )}
 
-        {/* Reason / Note */}
+        {/* Note */}
         {(() => {
-          const note = order.rejectionReason
-            || (order.statusHistory || []).slice().reverse().find((h) => h.note)?.note
-            || '';
+          const latestNote = (order.statusHistory || []).slice().reverse().find(
+            (h) => h.note && !h.note.startsWith('Status changed to') && h.note !== 'Order created'
+          )?.note;
+          const note = order.rejectionReason || latestNote || '';
           if (!note || order.status === 'submitted') return null;
-          const isRejected = order.status === 'rejected';
           return (
-            <View style={[styles.noteCard, isRejected ? styles.noteCardRejected : styles.noteCardInfo]}>
-              <Text style={[styles.noteLabel, isRejected ? styles.noteLabelRejected : styles.noteLabelInfo]}>
-                {isRejected ? 'Rejection Reason' : 'Note'}
-              </Text>
-              <Text style={[styles.noteText, isRejected ? styles.noteTextRejected : styles.noteTextInfo]}>
-                {note}
-              </Text>
+            <View style={[styles.noteCard, styles.noteCardInfo]}>
+              <Text style={[styles.noteLabel, styles.noteLabelInfo]}>Note</Text>
+              <Text style={[styles.noteText, styles.noteTextInfo]}>{note}</Text>
             </View>
           );
         })()}
@@ -376,10 +372,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
   },
-  noteCardRejected: {
-    backgroundColor: '#FFF5F5',
-    borderColor: '#FED7D7',
-  },
   noteCardInfo: {
     backgroundColor: '#EFF6FF',
     borderColor: '#BAE0FF',
@@ -391,9 +383,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginBottom: 6,
   },
-  noteLabelRejected: {
-    color: '#E53E3E',
-  },
   noteLabelInfo: {
     color: '#0089FF',
   },
@@ -401,9 +390,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     lineHeight: 18,
-  },
-  noteTextRejected: {
-    color: '#C53030',
   },
   noteTextInfo: {
     color: '#24315D',
