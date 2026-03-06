@@ -29,6 +29,12 @@ const api = axios.create({
 
 let isRefreshing = false;
 let failedQueue = [];
+let onSessionExpired = null;
+
+// Called by AuthContext to register the logout handler
+export const setSessionExpiredHandler = (handler) => {
+  onSessionExpired = handler;
+};
 
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
@@ -86,6 +92,8 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         await storage.clear();
+        // Notify AuthContext so the app navigates to the login screen
+        if (onSessionExpired) onSessionExpired();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

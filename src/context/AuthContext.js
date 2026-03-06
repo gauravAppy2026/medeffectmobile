@@ -1,7 +1,9 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
+import { Alert } from 'react-native';
 import { authService } from '../services/authService';
 import { userService } from '../services/userService';
 import { storage } from '../utils/storage';
+import { setSessionExpiredHandler } from '../services/api';
 
 const AuthContext = createContext({
   user: null,
@@ -16,6 +18,21 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Register the session-expired handler so api.js can trigger logout
+  const handleSessionExpired = useCallback(() => {
+    setUser(null);
+    Alert.alert(
+      'Session Expired',
+      'Your session has expired. Please log in again.',
+      [{ text: 'OK' }],
+    );
+  }, []);
+
+  useEffect(() => {
+    setSessionExpiredHandler(handleSessionExpired);
+    return () => setSessionExpiredHandler(null);
+  }, [handleSessionExpired]);
 
   useEffect(() => {
     checkAuth();
