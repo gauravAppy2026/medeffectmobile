@@ -22,10 +22,16 @@ const TABS = [
   { key: 'rejected', label: 'Rejected' },
 ];
 
-const STATUS_COLORS = {
-  pending: '#FACC15',
-  approved: '#22C55E',
-  rejected: '#F87171',
+const STATUS_STYLES = {
+  pending: { color: '#BB4D00', bg: '#FFF8DB' },
+  approved: { color: '#007A55', bg: '#DEFCED' },
+  rejected: { color: '#C70036', bg: '#FFEBEC' },
+};
+
+const STATUS_LABELS = {
+  pending: 'Pending',
+  approved: 'Covered',
+  rejected: 'Not Covered',
 };
 
 const AVATAR_COLORS = ['#D4E8FF', '#F3E5FF', '#FFF3E0', '#E8F5E9', '#FDE8E8'];
@@ -70,7 +76,8 @@ const IVRHistoryScreen = ({ navigation }) => {
     const name = `${item.patient?.firstName || ''} ${item.patient?.lastName || ''}`.trim() || 'Unknown';
     const initials = getInitials(name);
     const avatarBg = AVATAR_COLORS[index % AVATAR_COLORS.length];
-    const statusColor = STATUS_COLORS[item.status] || '#FACC15';
+    const statusStyle = STATUS_STYLES[item.status] || STATUS_STYLES.pending;
+    const statusLabel = STATUS_LABELS[item.status] || item.status;
 
     return (
       <TouchableOpacity
@@ -86,7 +93,9 @@ const IVRHistoryScreen = ({ navigation }) => {
           <Text style={styles.cardId}>{item.requestId || 'N/A'}</Text>
         </View>
         <View style={styles.cardRight}>
-          <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+          <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
+            <Text style={[styles.statusBadgeText, { color: statusStyle.color }]}>{statusLabel}</Text>
+          </View>
           <Image source={chevronIcon} style={styles.chevronIcon} resizeMode="contain" />
         </View>
       </TouchableOpacity>
@@ -246,11 +255,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 12,
   },
-  statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
     marginRight: 8,
+  },
+  statusBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
   },
   chevronIcon: {
     width: 24,
