@@ -123,7 +123,7 @@ const HomeScreen = ({ navigation }) => {
               {renderOrderStatusCard(shippingIcon, orderCounts.approved, 'Approved', '#1447E6', '#E6F1FF', '#BEDBFF')}
             </View>
             <View style={styles.orderStatusRow}>
-              {renderOrderStatusCard(taskAltIcon, orderCounts.completed, 'Completed', '#007A55', '#DEFCED', '#A4F4CF')}
+              {renderOrderStatusCard(taskAltIcon, orderCounts.completed, 'Shipped', '#007A55', '#DEFCED', '#A4F4CF')}
               {renderOrderStatusCard(cancelIcon, orderCounts.cancelled, 'Cancelled', '#C70036', '#FFEBEC', '#FFCCD3')}
             </View>
           </View>

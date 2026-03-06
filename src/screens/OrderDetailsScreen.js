@@ -13,13 +13,23 @@ import { orderService } from '../services/orderService';
 const STATUS_COLORS = {
   submitted: '#FFB020',
   approved: '#0089FF',
-  shipped: '#0089FF',
+  shipped: '#4CAF50',
   completed: '#4CAF50',
   cancelled: '#FF4D6A',
   rejected: '#FF4D6A',
 };
 
-const TIMELINE_STEPS = ['submitted', 'approved', 'completed'];
+// Map backend status to display label
+const STATUS_LABELS = {
+  submitted: 'Submitted',
+  approved: 'Approved',
+  completed: 'Shipped',
+  shipped: 'Shipped',
+  cancelled: 'Cancelled',
+  rejected: 'Rejected',
+};
+
+const TIMELINE_STEPS = ['submitted', 'approved', 'shipped'];
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -98,14 +108,20 @@ const OrderDetailsScreen = ({ navigation, route }) => {
   }
 
   const statusColor = STATUS_COLORS[order.status] || '#6C7490';
-  const statusLabel = order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : '';
+  const statusLabel = STATUS_LABELS[order.status] || (order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : '');
 
   // Build timeline from statusHistory
   const statusHistory = order.statusHistory || [];
   const statusMap = {};
-  statusHistory.forEach((h) => { statusMap[h.status] = h.timestamp; });
+  statusHistory.forEach((h) => {
+    statusMap[h.status] = h.timestamp;
+    // Map 'completed' from backend to 'shipped' for timeline display
+    if (h.status === 'completed') statusMap['shipped'] = h.timestamp;
+  });
 
-  const currentStepIndex = TIMELINE_STEPS.indexOf(order.status);
+  // Map 'completed' from backend to 'shipped' for timeline display
+  const mappedStatus = order.status === 'completed' ? 'shipped' : order.status;
+  const currentStepIndex = TIMELINE_STEPS.indexOf(mappedStatus);
 
   const patientName = order.patientName ||
     `${order.patient?.firstName || ''} ${order.patient?.lastName || ''}`.trim() || 'N/A';

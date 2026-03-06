@@ -19,14 +19,14 @@ const TABS = [
   { key: 'all', label: 'All' },
   { key: 'submitted', label: 'Submitted' },
   { key: 'approved', label: 'Approved' },
-  { key: 'completed', label: 'Completed' },
+  { key: 'completed', label: 'Shipped' },
   { key: 'cancelled', label: 'Cancelled' },
 ];
 
 const STATUS_COLORS = {
   submitted: '#FFB020',
   approved: '#0089FF',
-  shipped: '#0089FF',
+  shipped: '#4CAF50',
   completed: '#4CAF50',
   cancelled: '#FF4D6A',
   rejected: '#FF4D6A',
