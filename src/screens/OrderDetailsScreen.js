@@ -186,6 +186,25 @@ const OrderDetailsScreen = ({ navigation, route }) => {
           </View>
         )}
 
+        {/* Reason / Note */}
+        {(() => {
+          const note = order.rejectionReason
+            || (order.statusHistory || []).slice().reverse().find((h) => h.note)?.note
+            || '';
+          if (!note || order.status === 'submitted') return null;
+          const isRejected = order.status === 'rejected';
+          return (
+            <View style={[styles.noteCard, isRejected ? styles.noteCardRejected : styles.noteCardInfo]}>
+              <Text style={[styles.noteLabel, isRejected ? styles.noteLabelRejected : styles.noteLabelInfo]}>
+                {isRejected ? 'Rejection Reason' : 'Note'}
+              </Text>
+              <Text style={[styles.noteText, isRejected ? styles.noteTextRejected : styles.noteTextInfo]}>
+                {note}
+              </Text>
+            </View>
+          );
+        })()}
+
         {/* Patient Info */}
         <InfoCard label="Patient">
           <Text style={styles.infoName}>{patientName}</Text>
@@ -349,6 +368,45 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#FFFFFF',
     fontWeight: '600',
+  },
+  // Note / Reason Card
+  noteCard: {
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+  },
+  noteCardRejected: {
+    backgroundColor: '#FFF5F5',
+    borderColor: '#FED7D7',
+  },
+  noteCardInfo: {
+    backgroundColor: '#EFF6FF',
+    borderColor: '#BAE0FF',
+  },
+  noteLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  noteLabelRejected: {
+    color: '#E53E3E',
+  },
+  noteLabelInfo: {
+    color: '#0089FF',
+  },
+  noteText: {
+    fontSize: 13,
+    fontWeight: '500',
+    lineHeight: 18,
+  },
+  noteTextRejected: {
+    color: '#C53030',
+  },
+  noteTextInfo: {
+    color: '#24315D',
   },
   // Info Cards
   infoCard: {
