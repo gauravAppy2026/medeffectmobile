@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { Colors } from '../theme';
 import { LightHeader } from '../components';
@@ -72,18 +73,24 @@ const OrderDetailsScreen = ({ navigation, route }) => {
   const orderId = route?.params?.orderId;
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchOrder = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await orderService.getOrderById(orderId);
+      setOrder(response.data.data || response.data);
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to load order';
+      console.log('Order detail fetch error:', msg, 'orderId:', orderId);
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const response = await orderService.getOrderById(orderId);
-        setOrder(response.data.data);
-      } catch (err) {
-        console.log('Order detail fetch error:', err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     if (orderId) fetchOrder();
   }, [orderId]);
 
@@ -101,7 +108,14 @@ const OrderDetailsScreen = ({ navigation, route }) => {
       <View style={styles.container}>
         <LightHeader title="Order Details" onBack={() => navigation.goBack()} />
         <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>Order not found</Text>
+          <Text style={styles.emptyText}>{error || 'Order not found'}</Text>
+          <TouchableOpacity
+            onPress={fetchOrder}
+            style={styles.retryButton}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -248,6 +262,18 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: '#6C7490',
+  },
+  retryButton: {
+    marginTop: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    backgroundColor: '#0089FF',
+    borderRadius: 10,
+  },
+  retryText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   // Order ID Card
   orderIdCard: {
