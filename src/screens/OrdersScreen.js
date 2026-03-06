@@ -76,16 +76,14 @@ const OrdersScreen = ({ navigation }) => {
       <DarkHeader
         title="Order History"
         subtitle="Manage customer orders  history easily"
-        compact
+        bottomContent={
+          <Button
+            title="+ Create New Order"
+            onPress={() => navigation.navigate('OrderCreation')}
+            style={styles.createButton}
+          />
+        }
       />
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="+ Create New Order"
-          onPress={() => navigation.navigate('OrderCreation')}
-          style={styles.createButton}
-        />
-      </View>
 
       {/* Figma: tab filter with underline style */}
       <TabFilter
@@ -120,12 +118,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  buttonContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
   createButton: {
-    marginBottom: 4,
     borderRadius: 10,
     height: 50,
   },

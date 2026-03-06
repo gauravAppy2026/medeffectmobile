@@ -92,14 +92,16 @@ const IVRListScreen = ({ navigation }) => {
             <Image source={historyIcon} style={styles.historyIconImage} resizeMode="contain" />
           </TouchableOpacity>
         }
+        bottomContent={
+          <Button
+            title="+ Create New IVR"
+            onPress={() => navigation.navigate('InsuranceVerification')}
+            style={styles.createButton}
+          />
+        }
       />
 
       <View style={styles.content}>
-        <Button
-          title="+ Create New IVR"
-          onPress={() => navigation.navigate('InsuranceVerification')}
-          style={styles.createButton}
-        />
 
         <Text style={styles.sectionTitle}>Recent Requests</Text>
 
@@ -136,7 +138,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xl,
   },
   createButton: {
-    marginBottom: Spacing.xxl,
     borderRadius: BorderRadius.md,
     height: 50,
   },

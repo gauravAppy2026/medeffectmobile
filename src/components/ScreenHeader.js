@@ -4,7 +4,7 @@ import { Colors, Typography, Spacing } from '../theme';
 
 // Dark navy header used on Home, Orders, IVR, Profile
 // Figma: gradient from #1D293D to #0F172B, height ~200px for full, ~120px for compact
-const DarkHeader = ({ title, subtitle, leftContent, rightContent, style, compact = false }) => {
+const DarkHeader = ({ title, subtitle, leftContent, rightContent, bottomContent, style, compact = false }) => {
   return (
     <View style={[styles.darkHeader, compact && styles.darkHeaderCompact, style]}>
       <StatusBar barStyle="light-content" />
@@ -16,6 +16,7 @@ const DarkHeader = ({ title, subtitle, leftContent, rightContent, style, compact
         </View>
         {rightContent && <View style={styles.rightContent}>{rightContent}</View>}
       </View>
+      {bottomContent && <View style={styles.bottomContent}>{bottomContent}</View>}
     </View>
   );
 };
@@ -78,6 +79,9 @@ const styles = StyleSheet.create({
   },
   rightContent: {
     marginLeft: 12,
+  },
+  bottomContent: {
+    marginTop: 16,
   },
   lightHeader: {
     backgroundColor: Colors.white,
