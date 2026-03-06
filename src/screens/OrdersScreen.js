@@ -4,16 +4,12 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  TouchableOpacity,
-  Image,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { Colors } from '../theme';
-import { DarkHeader, TabFilter, OrderListItem } from '../components';
+import { Colors, Spacing, BorderRadius } from '../theme';
+import { DarkHeader, TabFilter, OrderListItem, Button } from '../components';
 import { orderService } from '../services/orderService';
-
-const plusIcon = require('../assets/icons/plus_circle.png');
 
 const TABS = [
   { key: 'all', label: 'All' },
@@ -81,14 +77,15 @@ const OrdersScreen = ({ navigation }) => {
         title="Order History"
         subtitle="Manage customer orders  history easily"
         compact
-        rightContent={
-          <TouchableOpacity
-            onPress={() => navigation.navigate('OrderCreation')}
-          >
-            <Image source={plusIcon} style={styles.plusIconImage} resizeMode="contain" />
-          </TouchableOpacity>
-        }
       />
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="+ Create New Order"
+          onPress={() => navigation.navigate('OrderCreation')}
+          style={styles.createButton}
+        />
+      </View>
 
       {/* Figma: tab filter with underline style */}
       <TabFilter
@@ -123,14 +120,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  createButton: {
+    marginBottom: 4,
+    borderRadius: 10,
+    height: 50,
+  },
   listContent: {
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 24,
-  },
-  plusIconImage: {
-    width: 40,
-    height: 40,
   },
   emptyState: {
     flex: 1,
