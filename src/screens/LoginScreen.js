@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { Colors } from '../theme';
 import { useAuth } from '../context/AuthContext';
-import { validateEmail, validatePassword } from '../utils/validators';
+import { validateEmail } from '../utils/validators';
 
 // Import actual Figma assets
 const logoImage = require('../assets/icons/logo.png');
@@ -34,7 +34,8 @@ const LoginScreen = ({ navigation }) => {
   const handleLogin = async () => {
     const errors = {};
     const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
+    // Only check password is present for login (HIPAA password policy applies to new/changed passwords only)
+    const passwordError = !password ? 'Password is required' : null;
     if (emailError) errors.email = emailError;
     if (passwordError) errors.password = passwordError;
 

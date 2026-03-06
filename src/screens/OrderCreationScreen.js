@@ -65,15 +65,24 @@ const OrderCreationScreen = ({ navigation }) => {
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        const [docRes, prodRes] = await Promise.all([
-          doctorService.getDoctors(),
-          productService.getProducts(),
-        ]);
-        setDoctors(docRes.data.data || []);
-        setProducts(prodRes.data.data || []);
-      } catch (err) {
-        console.log('Load dropdown data error:', err.message);
+      // Load doctors and products independently so one failure doesn't block the other
+      const [docResult, prodResult] = await Promise.allSettled([
+        doctorService.getDoctors(),
+        productService.getProducts(),
+      ]);
+
+      if (docResult.status === 'fulfilled') {
+        const docData = docResult.value.data?.data || docResult.value.data || [];
+        setDoctors(Array.isArray(docData) ? docData : []);
+      } else {
+        console.log('Doctor load error:', docResult.reason?.message);
+      }
+
+      if (prodResult.status === 'fulfilled') {
+        const prodData = prodResult.value.data?.data || prodResult.value.data || [];
+        setProducts(Array.isArray(prodData) ? prodData : []);
+      } else {
+        console.log('Product load error:', prodResult.reason?.message);
       }
     };
     loadData();

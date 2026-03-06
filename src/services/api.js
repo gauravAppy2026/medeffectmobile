@@ -3,14 +3,14 @@ import { Platform } from 'react-native';
 import { storage } from '../utils/storage';
 
 // ── Production API URL ──
-// Update this to your deployed backend URL before building for production
+// Update this to your deployed backend URL before building for production//__DEV__
 const PRODUCTION_API_URL = 'https://medeffects-backend.onrender.com/api';
 
 // For physical devices in dev, replace with your Mac's local IP (e.g. 192.168.x.x)
 const DEV_MACHINE_IP = 'localhost';
 
 const getBaseUrl = () => {
-  if (__DEV__) {
+  if (false) {
     if (Platform.OS === 'android') {
       return 'http://10.0.2.2:3001/api'; // Android emulator → host
     }

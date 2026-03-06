@@ -126,7 +126,10 @@ const OrderDetailsScreen = ({ navigation, route }) => {
   const patientName = order.patientName ||
     `${order.patient?.firstName || ''} ${order.patient?.lastName || ''}`.trim() || 'N/A';
   const patientPhone = order.patient?.phone || '';
-  const patientAddress = order.patient?.address || '';
+  const addr = order.address || order.patient?.address;
+  const patientAddress = addr
+    ? (typeof addr === 'string' ? addr : [addr.street, addr.city, addr.state, addr.zipCode].filter(Boolean).join(', '))
+    : '';
 
   const doctorName = order.doctor
     ? `Dr. ${order.doctor.firstName || ''} ${order.doctor.lastName || ''}`.trim()
