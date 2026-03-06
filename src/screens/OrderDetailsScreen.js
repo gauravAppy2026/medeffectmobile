@@ -154,9 +154,6 @@ const OrderDetailsScreen = ({ navigation, route }) => {
             <Text style={styles.orderIdLabel}>Order ID</Text>
             <Text style={styles.orderIdValue}>{order.orderId}</Text>
           </View>
-          <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
-            <Text style={styles.statusBadgeText}>{statusLabel}</Text>
-          </View>
         </View>
 
         {/* Timeline */}
@@ -182,9 +179,6 @@ const OrderDetailsScreen = ({ navigation, route }) => {
             <View>
               <Text style={styles.trackingLabel}>Tracking Number</Text>
               <Text style={styles.trackingNumber}>{order.trackingNumber}</Text>
-            </View>
-            <View style={[styles.trackingBadge, { backgroundColor: statusColor }]}>
-              <Text style={styles.trackingBadgeText}>{statusLabel}</Text>
             </View>
           </View>
         )}
