@@ -15,8 +15,8 @@ const TABS = [
   { key: 'all', label: 'All' },
   { key: 'submitted', label: 'Submitted' },
   { key: 'approved', label: 'Approved' },
-  { key: 'completed', label: 'Shipped' },
-  { key: 'cancelled', label: 'Cancelled' },
+  { key: 'shipped', label: 'Shipped' },
+  { key: 'completed', label: 'Completed' },
 ];
 
 const STATUS_COLORS = {

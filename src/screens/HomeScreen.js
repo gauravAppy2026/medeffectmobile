@@ -23,7 +23,7 @@ const cancelIcon = require('../assets/icons/cancel.png');
 const HomeScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [recentOrders, setRecentOrders] = useState([]);
-  const [orderCounts, setOrderCounts] = useState({ submitted: 0, approved: 0, completed: 0, cancelled: 0 });
+  const [orderCounts, setOrderCounts] = useState({ submitted: 0, approved: 0, shipped: 0, cancelled: 0 });
   const [ivrCounts, setIvrCounts] = useState({ pending: 0, approved: 0, rejected: 0 });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -36,7 +36,7 @@ const HomeScreen = ({ navigation }) => {
         ivrService.getStatusCounts(),
       ]);
       setRecentOrders(ordersRes.data.data?.data || ordersRes.data.data || []);
-      setOrderCounts(orderCountsRes.data.data || { submitted: 0, approved: 0, completed: 0, cancelled: 0 });
+      setOrderCounts(orderCountsRes.data.data || { submitted: 0, approved: 0, shipped: 0, cancelled: 0 });
       setIvrCounts(ivrCountsRes.data.data || { pending: 0, approved: 0, rejected: 0 });
     } catch (err) {
       console.log('Dashboard fetch error:', err.message);
@@ -123,7 +123,7 @@ const HomeScreen = ({ navigation }) => {
               {renderOrderStatusCard(shippingIcon, orderCounts.approved, 'Approved', '#1447E6', '#E6F1FF', '#BEDBFF')}
             </View>
             <View style={styles.orderStatusRow}>
-              {renderOrderStatusCard(taskAltIcon, orderCounts.completed, 'Shipped', '#007A55', '#DEFCED', '#A4F4CF')}
+              {renderOrderStatusCard(taskAltIcon, orderCounts.shipped, 'Shipped', '#007A55', '#DEFCED', '#A4F4CF')}
               {renderOrderStatusCard(cancelIcon, orderCounts.cancelled, 'Cancelled', '#C70036', '#FFEBEC', '#FFCCD3')}
             </View>
           </View>

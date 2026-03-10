@@ -323,7 +323,7 @@ const InsuranceVerificationScreen = ({ navigation }) => {
             activeOpacity={1}
             onPress={() => setShowDobPicker(false)}
           >
-            <View style={styles.datePickerContainer}>
+            <TouchableOpacity activeOpacity={1} style={styles.datePickerContainer}>
               <View style={styles.datePickerHeader}>
                 <TouchableOpacity onPress={() => setShowDobPicker(false)}>
                   <Text style={styles.datePickerCancel}>Cancel</Text>
@@ -352,7 +352,7 @@ const InsuranceVerificationScreen = ({ navigation }) => {
                 textColor="#000000"
                 themeVariant="light"
               />
-            </View>
+            </TouchableOpacity>
           </TouchableOpacity>
         </Modal>
       ) : (

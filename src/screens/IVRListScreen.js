@@ -10,7 +10,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { Colors, Typography, Spacing, BorderRadius } from '../theme';
+import { Colors, Spacing, BorderRadius } from '../theme';
 import { DarkHeader, Button } from '../components';
 import { ivrService } from '../services/ivrService';
 

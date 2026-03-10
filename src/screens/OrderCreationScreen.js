@@ -23,7 +23,7 @@ const QUANTITY_OPTIONS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 const PickerModal = ({ visible, onClose, title, data, onSelect, labelKey }) => (
   <Modal visible={visible} transparent animationType="slide">
     <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
-      <View style={styles.modalContent}>
+      <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
         <Text style={styles.modalTitle}>{title}</Text>
         <FlatList
           data={data}
@@ -40,7 +40,7 @@ const PickerModal = ({ visible, onClose, title, data, onSelect, labelKey }) => (
           )}
           style={{ maxHeight: 300 }}
         />
-      </View>
+      </TouchableOpacity>
     </TouchableOpacity>
   </Modal>
 );
@@ -252,15 +252,12 @@ const OrderCreationScreen = ({ navigation }) => {
           onChangeText={setAddress}
         />
 
-        <TouchableOpacity onPress={() => setShowDatePicker(true)} activeOpacity={0.7}>
-          <DropdownInput
-            label="Delivery Date"
-            placeholder="Select delivery date"
-            value={deliveryDate}
-            onPress={() => setShowDatePicker(true)}
-            required
-          />
-        </TouchableOpacity>
+        <DropdownInput
+          label="Delivery Date"
+          placeholder="Select delivery date"
+          value={deliveryDate}
+          onPress={() => setShowDatePicker(true)}
+        />
 
         <Input
           label="Comment"
@@ -294,7 +291,7 @@ const OrderCreationScreen = ({ navigation }) => {
       />
       <PickerModal
         visible={showProductPicker}
-        onClose={() => setShowProductPicker(false)}
+        onClose={() => { setShowProductPicker(false); setActiveLineIndex(null); }}
         title="Select Product"
         data={products}
         onSelect={(p) => {
@@ -304,7 +301,7 @@ const OrderCreationScreen = ({ navigation }) => {
       />
       <PickerModal
         visible={showQuantityPicker}
-        onClose={() => setShowQuantityPicker(false)}
+        onClose={() => { setShowQuantityPicker(false); setActiveLineIndex(null); }}
         title="Select Quantity"
         data={QUANTITY_OPTIONS}
         onSelect={(q) => {
@@ -321,7 +318,7 @@ const OrderCreationScreen = ({ navigation }) => {
             activeOpacity={1}
             onPress={() => setShowDatePicker(false)}
           >
-            <View style={styles.datePickerContainer}>
+            <TouchableOpacity activeOpacity={1} style={styles.datePickerContainer}>
               <View style={styles.datePickerHeader}>
                 <TouchableOpacity onPress={() => setShowDatePicker(false)}>
                   <Text style={styles.datePickerCancel}>Cancel</Text>
@@ -352,7 +349,7 @@ const OrderCreationScreen = ({ navigation }) => {
                 textColor="#000000"
                 themeVariant="light"
               />
-            </View>
+            </TouchableOpacity>
           </TouchableOpacity>
         </Modal>
       ) : (
