@@ -150,9 +150,18 @@ const OrderDetailsScreen = ({ navigation, route }) => {
     : 'N/A';
   const doctorDept = order.doctor?.department || '';
 
-  const productName = order.product?.name || 'N/A';
-  const productPrice = order.product?.price ? `$${order.product.price.toLocaleString()}` : '';
-  const quantity = order.quantity || 1;
+  // Build product list from lineItems or fallback to single product
+  const productItems = (order.lineItems && order.lineItems.length > 0)
+    ? order.lineItems.map((li) => ({
+        name: li.product?.name || 'N/A',
+        price: li.product?.price ? `$${li.product.price.toLocaleString()}` : '',
+        quantity: li.quantity || 1,
+      }))
+    : [{
+        name: order.product?.name || 'N/A',
+        price: order.product?.price ? `$${order.product.price.toLocaleString()}` : '',
+        quantity: order.quantity || 1,
+      }];
 
   return (
     <View style={styles.container}>
@@ -230,13 +239,18 @@ const OrderDetailsScreen = ({ navigation, route }) => {
 
         {/* Products Info */}
         <InfoCard label="Products">
-          <View style={styles.productRow}>
-            <View>
-              <Text style={styles.infoName}>{productName}</Text>
-              <Text style={styles.infoDetail}>Quantity : {quantity}</Text>
+          {productItems.map((item, idx) => (
+            <View key={idx}>
+              {idx > 0 && <View style={styles.productDivider} />}
+              <View style={styles.productRow}>
+                <View>
+                  <Text style={styles.infoName}>{item.name}</Text>
+                  <Text style={styles.infoDetail}>Quantity : {item.quantity}</Text>
+                </View>
+                {!!item.price && <Text style={styles.productPrice}>{item.price}</Text>}
+              </View>
             </View>
-            {!!productPrice && <Text style={styles.productPrice}>{productPrice}</Text>}
-          </View>
+          ))}
         </InfoCard>
 
         <View style={{ height: 48 }} />
@@ -456,6 +470,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+  },
+  productDivider: {
+    height: 1,
+    backgroundColor: '#E2E8F0',
+    marginVertical: 10,
   },
   productPrice: {
     fontSize: 16,

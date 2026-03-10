@@ -49,23 +49,24 @@ const OrderCreationScreen = ({ navigation }) => {
   const [doctors, setDoctors] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [patientName, setPatientName] = useState('');
-  const [quantity, setQuantity] = useState('');
   const [address, setAddress] = useState('');
   const [deliveryDate, setDeliveryDate] = useState('');
   const [comment, setComment] = useState('');
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [showDoctorPicker, setShowDoctorPicker] = useState(false);
-  const [showProductPicker, setShowProductPicker] = useState(false);
-  const [showQuantityPicker, setShowQuantityPicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
 
+  // Multi-product line items
+  const [lineItems, setLineItems] = useState([{ product: null, quantity: '' }]);
+  const [activeLineIndex, setActiveLineIndex] = useState(null);
+  const [showProductPicker, setShowProductPicker] = useState(false);
+  const [showQuantityPicker, setShowQuantityPicker] = useState(false);
+
   useEffect(() => {
     const loadData = async () => {
-      // Load doctors and products independently so one failure doesn't block the other
       const [docResult, prodResult] = await Promise.allSettled([
         doctorService.getDoctors(),
         productService.getProducts(),
@@ -88,13 +89,47 @@ const OrderCreationScreen = ({ navigation }) => {
     loadData();
   }, []);
 
+  const updateLineItem = (index, field, value) => {
+    setLineItems((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const addLineItem = () => {
+    if (lineItems.length >= 10) {
+      Alert.alert('Limit', 'Maximum 10 products per order');
+      return;
+    }
+    setLineItems((prev) => [...prev, { product: null, quantity: '' }]);
+  };
+
+  const removeLineItem = (index) => {
+    if (lineItems.length <= 1) return;
+    setLineItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const validate = () => {
     const newErrors = {};
     if (!selectedDoctor) newErrors.doctor = 'Doctor is required';
     const nameErr = validateRequired(patientName, 'Patient name');
     if (nameErr) newErrors.patientName = nameErr;
-    if (!selectedProduct) newErrors.product = 'Product is required';
-    if (!quantity) newErrors.quantity = 'Quantity is required';
+
+    // Validate line items
+    let hasLineError = false;
+    lineItems.forEach((item, idx) => {
+      if (!item.product) {
+        newErrors[`product_${idx}`] = 'Product is required';
+        hasLineError = true;
+      }
+      if (!item.quantity) {
+        newErrors[`quantity_${idx}`] = 'Quantity is required';
+        hasLineError = true;
+      }
+    });
+    if (hasLineError) newErrors.lineItems = 'Please complete all product entries';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -105,9 +140,11 @@ const OrderCreationScreen = ({ navigation }) => {
     try {
       const orderData = {
         doctor: selectedDoctor._id,
-        product: selectedProduct._id,
         patientName: patientName.trim(),
-        quantity: parseInt(quantity, 10),
+        lineItems: lineItems.map((item) => ({
+          product: item.product._id,
+          quantity: parseInt(item.quantity, 10),
+        })),
       };
       if (address.trim()) {
         orderData.address = { street: address.trim() };
@@ -130,7 +167,6 @@ const OrderCreationScreen = ({ navigation }) => {
   const doctorLabel = selectedDoctor
     ? `${selectedDoctor.firstName?.startsWith('Dr.') ? '' : 'Dr. '}${selectedDoctor.firstName} ${selectedDoctor.lastName}`
     : '';
-  const productLabel = selectedProduct ? selectedProduct.name : '';
 
   return (
     <View style={styles.container}>
@@ -165,21 +201,46 @@ const OrderCreationScreen = ({ navigation }) => {
         />
         {errors.patientName && <Text style={styles.errorText}>{errors.patientName}</Text>}
 
-        <DropdownInput
-          label="Product List"
-          placeholder="Select product"
-          value={productLabel}
-          onPress={() => setShowProductPicker(true)}
-        />
-        {errors.product && <Text style={styles.errorText}>{errors.product}</Text>}
+        {/* Products Section */}
+        <Text style={styles.sectionTitle}>Products</Text>
 
-        <DropdownInput
-          label="Product Quantity"
-          placeholder="Select quantity"
-          value={quantity}
-          onPress={() => setShowQuantityPicker(true)}
-        />
-        {errors.quantity && <Text style={styles.errorText}>{errors.quantity}</Text>}
+        {lineItems.map((item, idx) => (
+          <View key={idx} style={styles.lineItemContainer}>
+            {lineItems.length > 1 && (
+              <View style={styles.lineItemHeader}>
+                <Text style={styles.lineItemLabel}>Item {idx + 1}</Text>
+                <TouchableOpacity onPress={() => removeLineItem(idx)}>
+                  <Text style={styles.removeLineItem}>Remove</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <DropdownInput
+              label="Product"
+              placeholder="Select product"
+              value={item.product?.name || ''}
+              onPress={() => { setActiveLineIndex(idx); setShowProductPicker(true); }}
+              required
+            />
+            {errors[`product_${idx}`] && <Text style={styles.errorText}>{errors[`product_${idx}`]}</Text>}
+
+            <DropdownInput
+              label="Quantity"
+              placeholder="Select quantity"
+              value={item.quantity}
+              onPress={() => { setActiveLineIndex(idx); setShowQuantityPicker(true); }}
+              required
+            />
+            {errors[`quantity_${idx}`] && <Text style={styles.errorText}>{errors[`quantity_${idx}`]}</Text>}
+
+            {idx < lineItems.length - 1 && <View style={styles.lineItemDivider} />}
+          </View>
+        ))}
+
+        {lineItems.length < 10 && (
+          <TouchableOpacity style={styles.addProductButton} onPress={addLineItem} activeOpacity={0.7}>
+            <Text style={styles.addProductText}>+ Add Another Product</Text>
+          </TouchableOpacity>
+        )}
 
         {/* Address Details */}
         <Text style={styles.sectionTitle}>Address Details</Text>
@@ -216,7 +277,7 @@ const OrderCreationScreen = ({ navigation }) => {
       {/* Fixed Bottom Button */}
       <View style={styles.bottomBar}>
         <Button
-          title={submitting ? 'Submitting...' : 'Save'}
+          title={submitting ? 'Submitting...' : 'Submit'}
           onPress={handleSave}
           disabled={submitting}
         />
@@ -236,7 +297,9 @@ const OrderCreationScreen = ({ navigation }) => {
         onClose={() => setShowProductPicker(false)}
         title="Select Product"
         data={products}
-        onSelect={setSelectedProduct}
+        onSelect={(p) => {
+          if (activeLineIndex !== null) updateLineItem(activeLineIndex, 'product', p);
+        }}
         labelKey="name"
       />
       <PickerModal
@@ -244,7 +307,9 @@ const OrderCreationScreen = ({ navigation }) => {
         onClose={() => setShowQuantityPicker(false)}
         title="Select Quantity"
         data={QUANTITY_OPTIONS}
-        onSelect={(q) => setQuantity(q)}
+        onSelect={(q) => {
+          if (activeLineIndex !== null) updateLineItem(activeLineIndex, 'quantity', q);
+        }}
         labelKey={(q) => q}
       />
 
@@ -283,7 +348,9 @@ const OrderCreationScreen = ({ navigation }) => {
                 onChange={(event, date) => {
                   if (date) setSelectedDate(date);
                 }}
-                style={{ height: 200 }}
+                style={{ height: 220 }}
+                textColor="#000000"
+                themeVariant="light"
               />
             </View>
           </TouchableOpacity>
@@ -331,9 +398,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     marginTop: 8,
   },
-  calendarIcon: {
-    fontSize: 18,
-  },
   errorText: {
     fontSize: 12,
     color: '#F14336',
@@ -345,6 +409,45 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingBottom: 34,
     backgroundColor: '#FFFFFF',
+  },
+  // Line items
+  lineItemContainer: {
+    marginBottom: 4,
+  },
+  lineItemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  lineItemLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#24315D',
+  },
+  removeLineItem: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#FF4D6A',
+  },
+  lineItemDivider: {
+    height: 1,
+    backgroundColor: '#E2E8F0',
+    marginVertical: 12,
+  },
+  addProductButton: {
+    borderWidth: 1.5,
+    borderColor: '#0089FF',
+    borderStyle: 'dashed',
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  addProductText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#0089FF',
   },
   // Modal styles
   modalOverlay: {

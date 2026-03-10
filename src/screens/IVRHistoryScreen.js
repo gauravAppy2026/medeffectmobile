@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Colors, Spacing, BorderRadius } from '../theme';
 import { LightHeader } from '../components';
 import { ivrService } from '../services/ivrService';
@@ -63,7 +64,7 @@ const IVRHistoryScreen = ({ navigation }) => {
     }
   }, []);
 
-  useEffect(() => { fetchRequests(activeTab); }, [activeTab, fetchRequests]);
+  useFocusEffect(useCallback(() => { fetchRequests(activeTab); }, [activeTab, fetchRequests]));
 
   const handleTabPress = (tabKey) => {
     setActiveTab(tabKey);
@@ -82,7 +83,7 @@ const IVRHistoryScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.requestCard}
-        onPress={() => {}}
+        onPress={() => navigation.navigate('IVRDetail', { ivrId: item._id })}
         activeOpacity={0.7}
       >
         <View style={[styles.avatar, { backgroundColor: avatarBg }]}>

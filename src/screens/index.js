@@ -8,6 +8,7 @@ export { default as OrderDetailsScreen } from './OrderDetailsScreen';
 export { default as ProfileScreen } from './ProfileScreen';
 export { default as SuccessScreen } from './SuccessScreen';
 export { default as IVRHistoryScreen } from './IVRHistoryScreen';
+export { default as IVRDetailScreen } from './IVRDetailScreen';
 export { default as AccountInformationScreen } from './AccountInformationScreen';
 export { default as ChangePasswordScreen } from './ChangePasswordScreen';
 export { default as HelpSupportScreen } from './HelpSupportScreen';

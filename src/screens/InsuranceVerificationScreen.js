@@ -348,7 +348,9 @@ const InsuranceVerificationScreen = ({ navigation }) => {
                 onChange={(event, date) => {
                   if (date) setSelectedDobDate(date);
                 }}
-                style={{ height: 200 }}
+                style={{ height: 220 }}
+                textColor="#000000"
+                themeVariant="light"
               />
             </View>
           </TouchableOpacity>

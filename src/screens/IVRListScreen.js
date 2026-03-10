@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme';
 import { DarkHeader, Button } from '../components';
 import { ivrService } from '../services/ivrService';
@@ -54,7 +55,7 @@ const IVRListScreen = ({ navigation }) => {
     }
   }, []);
 
-  useEffect(() => { fetchRequests(); }, [fetchRequests]);
+  useFocusEffect(useCallback(() => { fetchRequests(); }, [fetchRequests]));
 
   const onRefresh = () => { setRefreshing(true); fetchRequests(); };
 
@@ -68,7 +69,7 @@ const IVRListScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.requestCard}
-        onPress={() => navigation.navigate('IVRHistory')}
+        onPress={() => navigation.navigate('IVRDetail', { ivrId: item._id })}
         activeOpacity={0.7}
       >
         <View style={[styles.avatar, { backgroundColor: avatarBg }]}>

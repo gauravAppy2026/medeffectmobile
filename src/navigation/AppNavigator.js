@@ -17,6 +17,7 @@ import {
   ProfileScreen,
   SuccessScreen,
   IVRHistoryScreen,
+  IVRDetailScreen,
   AccountInformationScreen,
   ChangePasswordScreen,
   HelpSupportScreen,
@@ -145,6 +146,7 @@ const AppNavigator = () => {
             />
             <Stack.Screen name="Success" component={SuccessScreen} />
             <Stack.Screen name="IVRHistory" component={IVRHistoryScreen} />
+            <Stack.Screen name="IVRDetail" component={IVRDetailScreen} />
             <Stack.Screen name="AccountInformation" component={AccountInformationScreen} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
