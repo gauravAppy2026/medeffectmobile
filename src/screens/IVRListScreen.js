@@ -25,8 +25,8 @@ const STATUS_STYLES = {
 
 const STATUS_LABELS = {
   pending: 'Pending',
-  approved: 'Covered',
-  rejected: 'Not Covered',
+  approved: 'Approved',
+  rejected: 'Rejected',
 };
 
 const AVATAR_COLORS = ['#D4E8FF', '#F3E5FF', '#FFF3E0', '#E8F5E9', '#FDE8E8'];

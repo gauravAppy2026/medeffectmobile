@@ -14,8 +14,8 @@ import { ivrService } from '../services/ivrService';
 
 const STATUS_STYLES = {
   pending: { color: '#BB4D00', bg: '#FFF8DB', label: 'Pending' },
-  approved: { color: '#007A55', bg: '#DEFCED', label: 'Covered' },
-  rejected: { color: '#C70036', bg: '#FFEBEC', label: 'Not Covered' },
+  approved: { color: '#007A55', bg: '#DEFCED', label: 'Approved' },
+  rejected: { color: '#C70036', bg: '#FFEBEC', label: 'Rejected' },
 };
 
 const formatDate = (dateStr) => {

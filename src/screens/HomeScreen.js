@@ -108,8 +108,8 @@ const HomeScreen = ({ navigation }) => {
 
           <View style={styles.ivrStatusContainer}>
             {renderIVRStatusCard(ivrCounts.pending, 'Submitted', 'rgba(255,248,219,0.5)', 'rgba(254,230,133,0.5)', '#BB4D00')}
-            {renderIVRStatusCard(ivrCounts.approved, 'Covered', 'rgba(230,241,255,0.5)', 'rgba(190,219,255,0.5)', '#2958E8')}
-            {renderIVRStatusCard(ivrCounts.rejected, 'Not Covered', 'rgba(255,235,236,0.5)', 'rgba(255,204,211,0.5)', '#C70036')}
+            {renderIVRStatusCard(ivrCounts.approved, 'Approved', 'rgba(230,241,255,0.5)', 'rgba(190,219,255,0.5)', '#2958E8')}
+            {renderIVRStatusCard(ivrCounts.rejected, 'Rejected', 'rgba(255,235,236,0.5)', 'rgba(255,204,211,0.5)', '#C70036')}
           </View>
         </View>
 
