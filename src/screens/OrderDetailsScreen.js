@@ -151,16 +151,19 @@ const OrderDetailsScreen = ({ navigation, route }) => {
   const doctorDept = order.doctor?.department || '';
 
   // Build product list from lineItems or fallback to single product
+  const isShipped = ['shipped', 'in_transit', 'completed'].includes(order.status);
   const productItems = (order.lineItems && order.lineItems.length > 0)
     ? order.lineItems.map((li) => ({
         name: li.product?.name || 'N/A',
         price: li.product?.price ? `$${li.product.price.toLocaleString()}` : '',
         quantity: li.quantity || 1,
+        shippedQuantity: li.shippedQuantity,
       }))
     : [{
         name: order.product?.name || 'N/A',
         price: order.product?.price ? `$${order.product.price.toLocaleString()}` : '',
         quantity: order.quantity || 1,
+        shippedQuantity: undefined,
       }];
 
   return (
@@ -245,7 +248,10 @@ const OrderDetailsScreen = ({ navigation, route }) => {
               <View style={styles.productRow}>
                 <View>
                   <Text style={styles.infoName}>{item.name}</Text>
-                  <Text style={styles.infoDetail}>Quantity : {item.quantity}</Text>
+                  <Text style={styles.infoDetail}>Ordered Qty : {item.quantity}</Text>
+                  {isShipped && item.shippedQuantity != null && (
+                    <Text style={styles.shippedQty}>Shipped Qty : {item.shippedQuantity}</Text>
+                  )}
                 </View>
                 {!!item.price && <Text style={styles.productPrice}>{item.price}</Text>}
               </View>
@@ -475,6 +481,12 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#E2E8F0',
     marginVertical: 10,
+  },
+  shippedQty: {
+    fontSize: 12,
+    color: '#10B981',
+    fontWeight: '600',
+    marginTop: 2,
   },
   productPrice: {
     fontSize: 16,
