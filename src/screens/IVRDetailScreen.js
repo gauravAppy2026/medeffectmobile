@@ -138,8 +138,6 @@ const IVRDetailScreen = ({ navigation, route }) => {
         {!!medicareId && (
           <InfoCard label="Insurance">
             <InfoRow label="Medicare ID" value={medicareId} />
-            {!!record.insurance?.insuranceName && <InfoRow label="Insurance Name" value={record.insurance.insuranceName} />}
-            {!!record.insurance?.policyNumber && <InfoRow label="Policy Number" value={record.insurance.policyNumber} />}
           </InfoCard>
         )}
 
