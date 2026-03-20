@@ -156,6 +156,27 @@ const IVRDetailScreen = ({ navigation, route }) => {
           </View>
         )}
 
+        {/* Approval Document */}
+        {!!record.approvalDocument && (
+          <InfoCard label="Approval Document">
+            <TouchableOpacity
+              style={styles.docItem}
+              onPress={() => openDocument(record.approvalDocument)}
+              activeOpacity={0.7}
+            >
+              {isImage(record.approvalDocument) ? (
+                <Image source={{ uri: record.approvalDocument }} style={styles.docThumbnail} resizeMode="cover" />
+              ) : (
+                <View style={[styles.docIconContainer, { backgroundColor: '#007A55' }]}>
+                  <Text style={styles.docIcon}>PDF</Text>
+                </View>
+              )}
+              <Text style={styles.docLink} numberOfLines={1}>Approval Document</Text>
+              <Text style={styles.docOpen}>Open</Text>
+            </TouchableOpacity>
+          </InfoCard>
+        )}
+
         {/* Documents */}
         {documents.length > 0 && (
           <InfoCard label="Documents">
