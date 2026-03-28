@@ -9,6 +9,7 @@ import {
   FlatList,
   TouchableOpacity,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Colors } from '../theme';
@@ -112,7 +113,7 @@ const OrderCreationScreen = ({ navigation }) => {
 
   const validate = () => {
     const newErrors = {};
-    if (!selectedDoctor) newErrors.doctor = 'Doctor is required';
+    if (!selectedDoctor) newErrors.doctor = 'Provider is required';
     const nameErr = validateRequired(patientName, 'Patient name');
     if (nameErr) newErrors.patientName = nameErr;
 
@@ -169,7 +170,7 @@ const OrderCreationScreen = ({ navigation }) => {
     : '';
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <LightHeader
         title="Order Creation"
         onBack={() => navigation.goBack()}
@@ -185,8 +186,8 @@ const OrderCreationScreen = ({ navigation }) => {
         <Text style={styles.sectionTitle}>Order Details</Text>
 
         <DropdownInput
-          label="Doctor's Name"
-          placeholder="Select practitioner"
+          label="Provider"
+          placeholder="Select provider"
           value={doctorLabel}
           onPress={() => setShowDoctorPicker(true)}
           required
@@ -284,7 +285,7 @@ const OrderCreationScreen = ({ navigation }) => {
       <PickerModal
         visible={showDoctorPicker}
         onClose={() => setShowDoctorPicker(false)}
-        title="Select Doctor"
+        title="Select Provider"
         data={doctors}
         onSelect={setSelectedDoctor}
         labelKey={(d) => `${d.firstName?.startsWith('Dr.') ? '' : 'Dr. '}${d.firstName} ${d.lastName}`}
@@ -330,7 +331,7 @@ const OrderCreationScreen = ({ navigation }) => {
                     const dd = String(date.getDate()).padStart(2, '0');
                     const mm = String(date.getMonth() + 1).padStart(2, '0');
                     const yyyy = date.getFullYear();
-                    setDeliveryDate(`${dd}/${mm}/${yyyy}`);
+                    setDeliveryDate(`${mm}/${dd}/${yyyy}`);
                     setShowDatePicker(false);
                   }}
                 >
@@ -366,13 +367,13 @@ const OrderCreationScreen = ({ navigation }) => {
                 const dd = String(date.getDate()).padStart(2, '0');
                 const mm = String(date.getMonth() + 1).padStart(2, '0');
                 const yyyy = date.getFullYear();
-                setDeliveryDate(`${dd}/${mm}/${yyyy}`);
+                setDeliveryDate(`${mm}/${dd}/${yyyy}`);
               }
             }}
           />
         )
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

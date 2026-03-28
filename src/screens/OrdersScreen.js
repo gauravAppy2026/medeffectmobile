@@ -16,7 +16,7 @@ const TABS = [
   { key: 'submitted', label: 'Submitted' },
   { key: 'approved', label: 'Approved' },
   { key: 'shipped', label: 'Shipped' },
-  { key: 'completed', label: 'Completed' },
+  { key: 'cancelled', label: 'Cancelled' },
 ];
 
 const STATUS_COLORS = {
@@ -28,8 +28,9 @@ const STATUS_COLORS = {
   rejected: '#FF4D6A',
 };
 
-const OrdersScreen = ({ navigation }) => {
-  const [activeTab, setActiveTab] = useState('all');
+const OrdersScreen = ({ navigation, route }) => {
+  const { initialStatus } = route?.params || {};
+  const [activeTab, setActiveTab] = useState(initialStatus || 'all');
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

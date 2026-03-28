@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { DarkHeader, OrderListItem } from '../components';
 import { useAuth } from '../context/AuthContext';
 import { orderService } from '../services/orderService';
@@ -24,7 +25,7 @@ const HomeScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [recentOrders, setRecentOrders] = useState([]);
   const [orderCounts, setOrderCounts] = useState({ submitted: 0, approved: 0, shipped: 0, cancelled: 0 });
-  const [ivrCounts, setIvrCounts] = useState({ pending: 0, approved: 0, rejected: 0 });
+  const [ivrCounts, setIvrCounts] = useState({ submitted: 0, covered: 0, not_covered: 0, rejected: 0 });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -37,7 +38,7 @@ const HomeScreen = ({ navigation }) => {
       ]);
       setRecentOrders(ordersRes.data.data?.data || ordersRes.data.data || []);
       setOrderCounts(orderCountsRes.data.data || { submitted: 0, approved: 0, shipped: 0, cancelled: 0 });
-      setIvrCounts(ivrCountsRes.data.data || { pending: 0, approved: 0, rejected: 0 });
+      setIvrCounts(ivrCountsRes.data.data || { submitted: 0, covered: 0, not_covered: 0, rejected: 0 });
     } catch (err) {
       console.log('Dashboard fetch error:', err.message);
     } finally {
@@ -46,27 +47,35 @@ const HomeScreen = ({ navigation }) => {
     }
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useFocusEffect(useCallback(() => { fetchData(); }, [fetchData]));
 
   const onRefresh = () => { setRefreshing(true); fetchData(); };
 
   const userName = user ? `${user.firstName} ${user.lastName}` : 'User';
   const initials = user ? `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}` : 'U';
-  const renderIVRStatusCard = (number, label, bgColor, borderColor, numberColor) => (
-    <View style={[styles.ivrCard, { backgroundColor: bgColor, borderColor: borderColor }]}>
+  const renderIVRStatusCard = (number, label, bgColor, borderColor, numberColor, statusKey) => (
+    <TouchableOpacity
+      style={[styles.ivrCard, { backgroundColor: bgColor, borderColor: borderColor }]}
+      activeOpacity={0.7}
+      onPress={() => navigation.navigate('IVR', { initialStatus: statusKey })}
+    >
       <Text style={[styles.ivrNumber, { color: numberColor }]}>{number}</Text>
       <Text style={[styles.ivrLabel, { color: numberColor }]}>{label}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
-  const renderOrderStatusCard = (icon, count, label, countColor, bgColor, borderColor) => (
-    <View style={[styles.orderCard, { backgroundColor: bgColor, borderColor: borderColor }]}>
+  const renderOrderStatusCard = (icon, count, label, countColor, bgColor, borderColor, statusKey) => (
+    <TouchableOpacity
+      style={[styles.orderCard, { backgroundColor: bgColor, borderColor: borderColor }]}
+      activeOpacity={0.7}
+      onPress={() => navigation.navigate('Orders', { initialStatus: statusKey })}
+    >
       <View style={styles.orderCardTopRow}>
         <Image source={icon} style={[styles.cardIcon, { tintColor: countColor }]} resizeMode="contain" />
         <Text style={[styles.orderCount, { color: countColor }]}>{count}</Text>
       </View>
       <Text style={[styles.orderLabel, { color: countColor }]}>{label}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -107,9 +116,10 @@ const HomeScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.ivrStatusContainer}>
-            {renderIVRStatusCard(ivrCounts.pending, 'Submitted', 'rgba(255,248,219,0.5)', 'rgba(254,230,133,0.5)', '#BB4D00')}
-            {renderIVRStatusCard(ivrCounts.approved, 'Approved', 'rgba(230,241,255,0.5)', 'rgba(190,219,255,0.5)', '#2958E8')}
-            {renderIVRStatusCard(ivrCounts.rejected, 'Rejected', 'rgba(255,235,236,0.5)', 'rgba(255,204,211,0.5)', '#C70036')}
+            {renderIVRStatusCard(ivrCounts.submitted, 'Submitted', 'rgba(255,248,219,0.5)', 'rgba(254,230,133,0.5)', '#BB4D00', 'submitted')}
+            {renderIVRStatusCard(ivrCounts.covered, 'Covered', 'rgba(222,252,237,0.5)', 'rgba(164,244,207,0.5)', '#007A55', 'covered')}
+            {renderIVRStatusCard(ivrCounts.not_covered, 'Not Covered', 'rgba(230,241,255,0.5)', 'rgba(190,219,255,0.5)', '#2958E8', 'not_covered')}
+            {renderIVRStatusCard(ivrCounts.rejected, 'Rejected', 'rgba(255,235,236,0.5)', 'rgba(255,204,211,0.5)', '#C70036', 'rejected')}
           </View>
         </View>
 
@@ -119,12 +129,12 @@ const HomeScreen = ({ navigation }) => {
 
           <View style={styles.orderStatusGrid}>
             <View style={styles.orderStatusRow}>
-              {renderOrderStatusCard(deployedCodeIcon, orderCounts.submitted, 'Submitted', '#BB4D00', '#FFF8DB', '#FEE685')}
-              {renderOrderStatusCard(shippingIcon, orderCounts.approved, 'Approved', '#1447E6', '#E6F1FF', '#BEDBFF')}
+              {renderOrderStatusCard(deployedCodeIcon, orderCounts.submitted, 'Submitted', '#BB4D00', '#FFF8DB', '#FEE685', 'submitted')}
+              {renderOrderStatusCard(taskAltIcon, orderCounts.approved, 'Approved', '#1447E6', '#E6F1FF', '#BEDBFF', 'approved')}
             </View>
             <View style={styles.orderStatusRow}>
-              {renderOrderStatusCard(taskAltIcon, orderCounts.shipped, 'Shipped', '#007A55', '#DEFCED', '#A4F4CF')}
-              {renderOrderStatusCard(cancelIcon, orderCounts.cancelled, 'Cancelled', '#C70036', '#FFEBEC', '#FFCCD3')}
+              {renderOrderStatusCard(shippingIcon, orderCounts.shipped, 'Shipped', '#007A55', '#DEFCED', '#A4F4CF', 'shipped')}
+              {renderOrderStatusCard(cancelIcon, orderCounts.cancelled, 'Cancelled', '#C70036', '#FFEBEC', '#FFCCD3', 'cancelled')}
             </View>
           </View>
         </View>
@@ -146,7 +156,7 @@ const HomeScreen = ({ navigation }) => {
             recentOrders.map((order) => (
               <OrderListItem
                 key={order._id}
-                name={order.patientName || `${order.patient?.firstName || ''} ${order.patient?.lastName || ''}`}
+                name={`${order.patientName || `${order.patient?.firstName || ''} ${order.patient?.lastName || ''}`.trim()}${order.doctor ? `, ${order.doctor.firstName || ''} ${order.doctor.lastName || ''}`.trim() : ''}`}
                 orderId={order.orderId}
                 status={order.status}
                 onPress={() => navigation.navigate('OrderDetails', { orderId: order._id })}
@@ -235,7 +245,6 @@ const styles = StyleSheet.create({
   },
   ivrCard: {
     flex: 1,
-    width: 102,
     height: 76,
     borderRadius: 14,
     borderWidth: 1,

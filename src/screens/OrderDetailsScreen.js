@@ -6,7 +6,9 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { Colors } from '../theme';
 import { LightHeader } from '../components';
 import { orderService } from '../services/orderService';
@@ -204,24 +206,40 @@ const OrderDetailsScreen = ({ navigation, route }) => {
 
         {/* Tracking Number */}
         {order.trackingNumber && (
-          <View style={styles.trackingCard}>
+          <TouchableOpacity
+            style={styles.trackingCard}
+            activeOpacity={0.7}
+            onPress={() => {
+              Clipboard.setString(order.trackingNumber);
+              Alert.alert('Copied!', 'Tracking number copied to clipboard.');
+            }}
+          >
             <View>
               <Text style={styles.trackingLabel}>Tracking Number</Text>
               <Text style={styles.trackingNumber}>{order.trackingNumber}</Text>
             </View>
+            <Text style={styles.copyHint}>Tap to copy</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Note from Customer */}
+        {!!order.comment && (
+          <View style={[styles.noteCard, styles.noteCardInfo]}>
+            <Text style={[styles.noteLabel, styles.noteLabelInfo]}>Note from Customer</Text>
+            <Text style={[styles.noteText, styles.noteTextInfo]}>{order.comment}</Text>
           </View>
         )}
 
-        {/* Note */}
+        {/* Note from MedEffects */}
         {(() => {
           const latestNote = (order.statusHistory || []).slice().reverse().find(
             (h) => h.note && !h.note.startsWith('Status changed to') && h.note !== 'Order created'
           )?.note;
           const note = order.rejectionReason || latestNote || '';
-          if (!note || order.status === 'submitted') return null;
+          if (!note) return null;
           return (
             <View style={[styles.noteCard, styles.noteCardInfo]}>
-              <Text style={[styles.noteLabel, styles.noteLabelInfo]}>Note</Text>
+              <Text style={[styles.noteLabel, styles.noteLabelInfo]}>Note from MedEffects</Text>
               <Text style={[styles.noteText, styles.noteTextInfo]}>{note}</Text>
             </View>
           );
@@ -400,6 +418,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#0089FF',
     marginTop: 2,
+  },
+  copyHint: {
+    fontSize: 11,
+    color: '#6C7490',
+    fontStyle: 'italic',
   },
   trackingBadge: {
     paddingHorizontal: 12,

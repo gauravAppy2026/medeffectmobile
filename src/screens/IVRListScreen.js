@@ -5,27 +5,36 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  Image,
   ActivityIndicator,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Colors, Spacing, BorderRadius } from '../theme';
-import { DarkHeader, Button } from '../components';
+import { DarkHeader, TabFilter, Button } from '../components';
 import { ivrService } from '../services/ivrService';
 
-const historyIcon = require('../assets/icons/history.png');
 const chevronIcon = require('../assets/icons/chevron_right.png');
 
+const TABS = [
+  { key: 'all', label: 'All' },
+  { key: 'submitted', label: 'Submitted' },
+  { key: 'covered', label: 'Covered' },
+  { key: 'not_covered', label: 'Not Covered' },
+  { key: 'rejected', label: 'Rejected' },
+];
+
 const STATUS_STYLES = {
-  pending: { color: '#BB4D00', bg: '#FFF8DB' },
-  approved: { color: '#007A55', bg: '#DEFCED' },
+  submitted: { color: '#BB4D00', bg: '#FFF8DB' },
+  covered: { color: '#007A55', bg: '#DEFCED' },
+  not_covered: { color: '#2958E8', bg: '#E6F1FF' },
   rejected: { color: '#C70036', bg: '#FFEBEC' },
 };
 
 const STATUS_LABELS = {
-  pending: 'Pending',
-  approved: 'Approved',
+  submitted: 'Submitted',
+  covered: 'Covered',
+  not_covered: 'Not Covered',
   rejected: 'Rejected',
 };
 
@@ -38,14 +47,18 @@ const getInitials = (name) => {
   return parts[0].substring(0, 2).toUpperCase();
 };
 
-const IVRListScreen = ({ navigation }) => {
+const IVRListScreen = ({ navigation, route }) => {
+  const { initialStatus } = route?.params || {};
+  const [activeTab, setActiveTab] = useState(initialStatus || 'all');
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchRequests = useCallback(async () => {
+  const fetchRequests = useCallback(async (status) => {
     try {
-      const response = await ivrService.getIVRRequests({ limit: 50 });
+      const params = { limit: 50 };
+      if (status && status !== 'all') params.status = status;
+      const response = await ivrService.getIVRRequests(params);
       setRequests(response.data.data?.data || response.data.data || []);
     } catch (err) {
       console.log('IVR list fetch error:', err.message);
@@ -55,15 +68,20 @@ const IVRListScreen = ({ navigation }) => {
     }
   }, []);
 
-  useFocusEffect(useCallback(() => { fetchRequests(); }, [fetchRequests]));
+  useFocusEffect(useCallback(() => { fetchRequests(activeTab); }, [activeTab, fetchRequests]));
 
-  const onRefresh = () => { setRefreshing(true); fetchRequests(); };
+  const handleTabPress = (tabKey) => {
+    setActiveTab(tabKey);
+    setLoading(true);
+  };
+
+  const onRefresh = () => { setRefreshing(true); fetchRequests(activeTab); };
 
   const renderRequestCard = ({ item, index }) => {
     const name = `${item.patient?.firstName || ''} ${item.patient?.lastName || ''}`.trim() || 'Unknown';
     const initials = getInitials(name);
     const avatarBg = AVATAR_COLORS[index % AVATAR_COLORS.length];
-    const statusStyle = STATUS_STYLES[item.status] || STATUS_STYLES.pending;
+    const statusStyle = STATUS_STYLES[item.status] || STATUS_STYLES.submitted;
     const statusLabel = STATUS_LABELS[item.status] || item.status;
 
     return (
@@ -94,14 +112,6 @@ const IVRListScreen = ({ navigation }) => {
       <DarkHeader
         title="IVR"
         subtitle="Manage customer IVR orders easily"
-        rightContent={
-          <TouchableOpacity
-            style={styles.historyButton}
-            onPress={() => navigation.navigate('IVRHistory')}
-          >
-            <Image source={historyIcon} style={styles.historyIconImage} resizeMode="contain" />
-          </TouchableOpacity>
-        }
         bottomContent={
           <Button
             title="+ Create New IVR"
@@ -111,9 +121,13 @@ const IVRListScreen = ({ navigation }) => {
         }
       />
 
-      <View style={styles.content}>
+      <TabFilter
+        tabs={TABS}
+        activeTab={activeTab}
+        onTabPress={handleTabPress}
+      />
 
-        <Text style={styles.sectionTitle}>Recent Requests</Text>
+      <View style={styles.content}>
 
         {loading ? (
           <ActivityIndicator color="#0089FF" style={{ marginTop: 20 }} />
@@ -168,21 +182,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: '#6C7490',
-  },
-
-  /* History Button in Header */
-  historyButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  historyIconImage: {
-    width: 22,
-    height: 22,
-    tintColor: '#0089FF',
   },
 
   /* Request Card */

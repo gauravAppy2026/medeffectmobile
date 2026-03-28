@@ -17,20 +17,23 @@ const chevronIcon = require('../assets/icons/chevron_right.png');
 
 const TABS = [
   { key: 'all', label: 'All' },
-  { key: 'approved', label: 'Approved' },
-  { key: 'pending', label: 'Pending' },
+  { key: 'submitted', label: 'Submitted' },
+  { key: 'covered', label: 'Covered' },
+  { key: 'not_covered', label: 'Not Covered' },
   { key: 'rejected', label: 'Rejected' },
 ];
 
 const STATUS_STYLES = {
-  pending: { color: '#BB4D00', bg: '#FFF8DB' },
-  approved: { color: '#007A55', bg: '#DEFCED' },
+  submitted: { color: '#BB4D00', bg: '#FFF8DB' },
+  covered: { color: '#007A55', bg: '#DEFCED' },
+  not_covered: { color: '#2958E8', bg: '#E6F1FF' },
   rejected: { color: '#C70036', bg: '#FFEBEC' },
 };
 
 const STATUS_LABELS = {
-  pending: 'Pending',
-  approved: 'Approved',
+  submitted: 'Submitted',
+  covered: 'Covered',
+  not_covered: 'Not Covered',
   rejected: 'Rejected',
 };
 
@@ -76,7 +79,7 @@ const IVRHistoryScreen = ({ navigation }) => {
     const name = `${item.patient?.firstName || ''} ${item.patient?.lastName || ''}`.trim() || 'Unknown';
     const initials = getInitials(name);
     const avatarBg = AVATAR_COLORS[index % AVATAR_COLORS.length];
-    const statusStyle = STATUS_STYLES[item.status] || STATUS_STYLES.pending;
+    const statusStyle = STATUS_STYLES[item.status] || STATUS_STYLES.submitted;
     const statusLabel = STATUS_LABELS[item.status] || item.status;
 
     return (

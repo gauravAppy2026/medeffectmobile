@@ -37,15 +37,11 @@ const InsuranceVerificationScreen = ({ navigation }) => {
   const [dob, setDob] = useState('');
   const [selectedDobDate, setSelectedDobDate] = useState(null);
   const [showDobPicker, setShowDobPicker] = useState(false);
-  const [gender, setGender] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
   const [medicareId, setMedicareId] = useState('');
   const [comment, setComment] = useState('');
   const [documents, setDocuments] = useState([]);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [showGenderPicker, setShowGenderPicker] = useState(false);
 
   const pickFromGallery = async () => {
     if (!ImagePicker) {
@@ -136,7 +132,7 @@ const InsuranceVerificationScreen = ({ navigation }) => {
     const dd = String(date.getDate()).padStart(2, '0');
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     const yyyy = date.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
+    return `${mm}/${dd}/${yyyy}`;
   };
 
   const formatFileSize = (bytes) => {
@@ -176,10 +172,6 @@ const InsuranceVerificationScreen = ({ navigation }) => {
       } else if (dob.trim()) {
         payload.patient.dateOfBirth = dob.trim();
       }
-
-      if (gender) payload.patient.gender = gender;
-      if (phone.trim()) payload.patient.phone = phone.trim();
-      if (address.trim()) payload.patient.address = address.trim();
 
       // Add insurance info if provided
       if (medicareId.trim()) {
@@ -251,7 +243,7 @@ const InsuranceVerificationScreen = ({ navigation }) => {
           <View pointerEvents="none">
             <Input
               label="Date of Birth"
-              placeholder="DD/MM/YYYY"
+              placeholder="MM/DD/YYYY"
               value={selectedDobDate ? formatDate(selectedDobDate) : dob}
               editable={false}
               required
@@ -260,32 +252,6 @@ const InsuranceVerificationScreen = ({ navigation }) => {
           </View>
         </TouchableOpacity>
         {errors.dob && <Text style={styles.errorText}>{errors.dob}</Text>}
-
-        <TouchableOpacity onPress={() => setShowGenderPicker(true)} activeOpacity={0.7}>
-          <View pointerEvents="none">
-            <Input
-              label="Gender"
-              placeholder="Select gender"
-              value={gender ? gender.charAt(0).toUpperCase() + gender.slice(1) : ''}
-              editable={false}
-            />
-          </View>
-        </TouchableOpacity>
-
-        <Input
-          label="Mobile Number"
-          placeholder="Enter mobile number"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-        />
-
-        <Input
-          label="Address"
-          placeholder="Enter address"
-          value={address}
-          onChangeText={setAddress}
-        />
 
         {/* Medicare Insurance Information */}
         <Text style={styles.sectionTitle}>Insurance Information</Text>
@@ -407,46 +373,6 @@ const InsuranceVerificationScreen = ({ navigation }) => {
         )
       )}
 
-      {/* Gender Picker */}
-      <Modal visible={showGenderPicker} transparent animationType="slide">
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowGenderPicker(false)}
-        >
-          <TouchableOpacity activeOpacity={1} style={styles.datePickerContainer}>
-            <View style={styles.datePickerHeader}>
-              <TouchableOpacity onPress={() => setShowGenderPicker(false)}>
-                <Text style={styles.datePickerCancel}>Cancel</Text>
-              </TouchableOpacity>
-              <Text style={styles.datePickerTitle}>Select Gender</Text>
-              <View style={{ width: 50 }} />
-            </View>
-            {['male', 'female', 'other'].map((g) => (
-              <TouchableOpacity
-                key={g}
-                onPress={() => {
-                  setGender(g);
-                  setShowGenderPicker(false);
-                }}
-                style={[
-                  styles.genderOption,
-                  gender === g && styles.genderOptionSelected,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.genderOptionText,
-                    gender === g && styles.genderOptionTextSelected,
-                  ]}
-                >
-                  {g.charAt(0).toUpperCase() + g.slice(1)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
     </View>
   );
 };
@@ -597,23 +523,6 @@ const styles = StyleSheet.create({
   },
   datePickerDone: {
     fontSize: 14,
-    color: '#0089FF',
-    fontWeight: '600',
-  },
-  genderOption: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-  },
-  genderOptionSelected: {
-    backgroundColor: '#F0F7FF',
-  },
-  genderOptionText: {
-    fontSize: 16,
-    color: '#24315D',
-  },
-  genderOptionTextSelected: {
     color: '#0089FF',
     fontWeight: '600',
   },

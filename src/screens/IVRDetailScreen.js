@@ -13,8 +13,9 @@ import { LightHeader } from '../components';
 import { ivrService } from '../services/ivrService';
 
 const STATUS_STYLES = {
-  pending: { color: '#BB4D00', bg: '#FFF8DB', label: 'Pending' },
-  approved: { color: '#007A55', bg: '#DEFCED', label: 'Approved' },
+  submitted: { color: '#BB4D00', bg: '#FFF8DB', label: 'Submitted' },
+  covered: { color: '#007A55', bg: '#DEFCED', label: 'Covered' },
+  not_covered: { color: '#2958E8', bg: '#E6F1FF', label: 'Not Covered' },
   rejected: { color: '#C70036', bg: '#FFEBEC', label: 'Rejected' },
 };
 
@@ -91,7 +92,7 @@ const IVRDetailScreen = ({ navigation, route }) => {
     );
   }
 
-  const statusStyle = STATUS_STYLES[record.status] || STATUS_STYLES.pending;
+  const statusStyle = STATUS_STYLES[record.status] || STATUS_STYLES.submitted;
   const patientName = `${record.patient?.firstName || ''} ${record.patient?.lastName || ''}`.trim() || 'N/A';
   const dob = formatDate(record.patient?.dateOfBirth);
   const medicareId = record.insurance?.medicareId || '';
@@ -130,8 +131,6 @@ const IVRDetailScreen = ({ navigation, route }) => {
         <InfoCard label="Patient Details">
           <InfoRow label="Name" value={patientName} />
           <InfoRow label="Date of Birth" value={dob} />
-          {!!record.patient?.gender && <InfoRow label="Gender" value={record.patient.gender} />}
-          {!!record.patient?.phone && <InfoRow label="Phone" value={record.patient.phone} />}
         </InfoCard>
 
         {/* Insurance Details */}
@@ -149,7 +148,7 @@ const IVRDetailScreen = ({ navigation, route }) => {
         )}
 
         {/* Admin Note */}
-        {!!record.adminNote && record.status !== 'pending' && (
+        {!!record.adminNote && (
           <View style={[styles.noteCard, styles.noteCardInfo]}>
             <Text style={[styles.noteLabel, styles.noteLabelInfo]}>Note</Text>
             <Text style={[styles.noteText, styles.noteTextInfo]}>{record.adminNote}</Text>
@@ -212,7 +211,7 @@ const IVRDetailScreen = ({ navigation, route }) => {
               value={`${record.submittedBy.firstName || ''} ${record.submittedBy.lastName || ''}`.trim()}
             />
           )}
-          {record.reviewedBy && record.status !== 'pending' && (
+          {record.reviewedBy && record.status !== 'submitted' && (
             <>
               <InfoRow
                 label="Reviewed By"
