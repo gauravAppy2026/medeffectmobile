@@ -37,8 +37,10 @@ const TIMELINE_STEPS = ['submitted', 'approved', 'shipped'];
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
   const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-    ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${mm}/${dd}/${yyyy}`;
 };
 
 const TimelineStep = ({ title, date, isCompleted, isLast }) => (

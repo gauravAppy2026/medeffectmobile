@@ -23,7 +23,10 @@ const formatDate = (dateStr) => {
   if (!dateStr) return 'N/A';
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${mm}/${dd}/${yyyy}`;
 };
 
 const InfoRow = ({ label, value }) => {
@@ -140,17 +143,17 @@ const IVRDetailScreen = ({ navigation, route }) => {
           </InfoCard>
         )}
 
-        {/* Patient Comment */}
+        {/* Note from Customer */}
         {!!record.comment && (
-          <InfoCard label="Patient Comment">
+          <InfoCard label="Note from Customer">
             <Text style={styles.commentText}>{record.comment}</Text>
           </InfoCard>
         )}
 
-        {/* Admin Note */}
+        {/* Note from MedEffects */}
         {!!record.adminNote && (
           <View style={[styles.noteCard, styles.noteCardInfo]}>
-            <Text style={[styles.noteLabel, styles.noteLabelInfo]}>Note</Text>
+            <Text style={[styles.noteLabel, styles.noteLabelInfo]}>Note from MedEffects</Text>
             <Text style={[styles.noteText, styles.noteTextInfo]}>{record.adminNote}</Text>
           </View>
         )}

@@ -53,9 +53,9 @@ const HelpSupportScreen = ({ navigation }) => {
   };
 
   const handleEmail = () => {
-    const phone = data?.contactEmail;
-    if (!phone) return;
-    openLink(`mailto:${phone}`, 'Email Address', phone);
+    const email = data?.contactEmail;
+    if (!email) return;
+    openLink(`mailto:${email}`, 'Email Address', email);
   };
 
   return (
