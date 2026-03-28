@@ -148,7 +148,7 @@ const OrderDetailsScreen = ({ navigation, route }) => {
     : '';
 
   const doctorName = order.doctor
-    ? `Dr. ${order.doctor.firstName || ''} ${order.doctor.lastName || ''}`.trim()
+    ? `${order.doctor.firstName || ''} ${order.doctor.lastName || ''}`.trim()
     : 'N/A';
   const doctorDept = order.doctor?.department || '';
 
