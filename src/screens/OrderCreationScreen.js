@@ -166,7 +166,7 @@ const OrderCreationScreen = ({ navigation }) => {
   };
 
   const doctorLabel = selectedDoctor
-    ? `${selectedDoctor.firstName?.startsWith('Dr.') ? '' : 'Dr. '}${selectedDoctor.firstName} ${selectedDoctor.lastName}`
+    ? `${selectedDoctor.firstName} ${selectedDoctor.lastName}`
     : '';
 
   return (
@@ -288,7 +288,7 @@ const OrderCreationScreen = ({ navigation }) => {
         title="Select Provider"
         data={doctors}
         onSelect={setSelectedDoctor}
-        labelKey={(d) => `${d.firstName?.startsWith('Dr.') ? '' : 'Dr. '}${d.firstName} ${d.lastName}`}
+        labelKey={(d) => `${d.firstName} ${d.lastName}`}
       />
       <PickerModal
         visible={showProductPicker}
