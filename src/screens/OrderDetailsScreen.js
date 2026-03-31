@@ -7,11 +7,27 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
+let Clipboard;
+try {
+  Clipboard = require('@react-native-clipboard/clipboard').default;
+} catch (e) {
+  Clipboard = null;
+}
+
+const copyToClipboard = (text) => {
+  if (Clipboard && Clipboard.setString) {
+    Clipboard.setString(text);
+  }
+  Alert.alert('Copied!', 'Tracking number copied to clipboard.');
+};
 import { Colors } from '../theme';
 import { LightHeader } from '../components';
 import { orderService } from '../services/orderService';
+
+const shippingIcon = require('../assets/icons/shipping.png');
+const taskAltIcon = require('../assets/icons/task_alt.png');
 
 const STATUS_COLORS = {
   submitted: '#FFB020',
@@ -43,14 +59,18 @@ const formatDate = (dateStr) => {
   return `${mm}/${dd}/${yyyy}`;
 };
 
-const TimelineStep = ({ title, date, isCompleted, isLast }) => (
+const TimelineStep = ({ title, date, isCompleted, isLast, icon }) => (
   <View style={styles.timelineStep}>
     <View style={styles.timelineLeft}>
       <View style={[
         styles.timelineDot,
         isCompleted ? styles.timelineDotCompleted : styles.timelineDotPending,
       ]}>
-        {isCompleted && <Text style={styles.timelineDotIcon}>{'✓'}</Text>}
+        {isCompleted && icon ? (
+          <Image source={icon} style={styles.timelineIcon} resizeMode="contain" />
+        ) : isCompleted ? (
+          <Text style={styles.timelineDotIcon}>{'✓'}</Text>
+        ) : null}
       </View>
       {!isLast && <View style={[
         styles.timelineLine,
@@ -194,6 +214,7 @@ const OrderDetailsScreen = ({ navigation, route }) => {
           {TIMELINE_STEPS.map((step, idx) => {
             const isCompleted = idx <= currentStepIndex;
             const historyDate = statusMap[step] ? formatDate(statusMap[step]) : '';
+            const stepIcon = step === 'approved' ? taskAltIcon : step === 'shipped' ? shippingIcon : null;
             return (
               <TimelineStep
                 key={step}
@@ -201,6 +222,7 @@ const OrderDetailsScreen = ({ navigation, route }) => {
                 date={historyDate}
                 isCompleted={isCompleted}
                 isLast={idx === TIMELINE_STEPS.length - 1}
+                icon={stepIcon}
               />
             );
           })}
@@ -211,10 +233,7 @@ const OrderDetailsScreen = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.trackingCard}
             activeOpacity={0.7}
-            onPress={() => {
-              Clipboard.setString(order.trackingNumber);
-              Alert.alert('Copied!', 'Tracking number copied to clipboard.');
-            }}
+            onPress={() => copyToClipboard(order.trackingNumber)}
           >
             <View>
               <Text style={styles.trackingLabel}>Tracking Number</Text>
@@ -375,6 +394,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '700',
+  },
+  timelineIcon: {
+    width: 18,
+    height: 18,
+    tintColor: '#FFFFFF',
   },
   timelineLine: {
     width: 2,
