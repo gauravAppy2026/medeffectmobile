@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   Platform,
   KeyboardAvoidingView,
-  Keyboard,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Colors } from '../theme';
@@ -18,7 +17,6 @@ import { LightHeader, Input, DropdownInput, Button } from '../components';
 import { orderService } from '../services/orderService';
 import { doctorService } from '../services/doctorService';
 import { productService } from '../services/productService';
-import { validateRequired } from '../utils/validators';
 
 const QUANTITY_OPTIONS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -115,8 +113,6 @@ const OrderCreationScreen = ({ navigation }) => {
   const validate = () => {
     const newErrors = {};
     if (!selectedDoctor) newErrors.doctor = 'Provider is required';
-    const nameErr = validateRequired(patientName, 'Patient name');
-    if (nameErr) newErrors.patientName = nameErr;
 
     // Validate line items
     let hasLineError = false;
@@ -170,15 +166,6 @@ const OrderCreationScreen = ({ navigation }) => {
     ? `${selectedDoctor.firstName} ${selectedDoctor.lastName}`
     : '';
 
-  const scrollViewRef = useRef(null);
-
-  useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardDidShow', () => {
-      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 150);
-    });
-    return () => showSub.remove();
-  }, []);
-
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={0}>
       <LightHeader
@@ -187,7 +174,6 @@ const OrderCreationScreen = ({ navigation }) => {
       />
 
       <ScrollView
-        ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

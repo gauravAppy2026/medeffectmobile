@@ -153,15 +153,33 @@ const HomeScreen = ({ navigation }) => {
           ) : recentOrders.length === 0 ? (
             <Text style={{ color: '#6C7490', textAlign: 'center', marginTop: 16 }}>No orders yet</Text>
           ) : (
-            recentOrders.map((order) => (
-              <OrderListItem
-                key={order._id}
-                name={`${order.patientName || `${order.patient?.firstName || ''} ${order.patient?.lastName || ''}`.trim()}${order.doctor ? `, ${order.doctor.firstName || ''} ${order.doctor.lastName || ''}`.trim() : ''}`}
-                orderId={order.orderId}
-                status={order.status}
-                onPress={() => navigation.navigate('OrderDetails', { orderId: order._id })}
-              />
-            ))
+            recentOrders.map((order) => {
+              const providerName = order.doctor
+                ? `${order.doctor.firstName || ''} ${order.doctor.lastName || ''}`.trim()
+                : '';
+              const patientName = (order.patientName ||
+                `${order.patient?.firstName || ''} ${order.patient?.lastName || ''}`.trim()).trim();
+              const displayName = providerName
+                ? `${providerName}${patientName ? ', ' + patientName : ''}`
+                : (patientName || 'Order');
+              let dateStr = '';
+              if (order.createdAt) {
+                const d = new Date(order.createdAt);
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                dateStr = `${mm}/${dd}/${d.getFullYear()}`;
+              }
+              return (
+                <OrderListItem
+                  key={order._id}
+                  name={displayName}
+                  orderId={order.orderId}
+                  date={dateStr}
+                  status={order.status}
+                  onPress={() => navigation.navigate('OrderDetails', { orderId: order._id })}
+                />
+              );
+            })
           )}
         </View>
 

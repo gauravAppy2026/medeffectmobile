@@ -14,6 +14,7 @@ const OrderListItem = ({
   statusColor,
   onPress,
   style,
+  date,
 }) => {
   // Avatar background colors matching Figma
   const getInitialsBg = () => {
@@ -21,6 +22,17 @@ const OrderListItem = ({
     const index = name ? name.charCodeAt(0) % colors.length : 0;
     return colors[index];
   };
+
+  // Derive initials from first segment of name (provider part before comma)
+  const computedInitials = (() => {
+    if (initials) return initials;
+    if (!name) return '';
+    const providerPart = name.split(',')[0].trim();
+    const words = providerPart.split(/\s+/);
+    return words.slice(0, 2).map((w) => w[0] || '').join('').toUpperCase();
+  })();
+
+  const subtitle = date ? `${orderId}  ·  ${date}` : orderId;
 
   return (
     <TouchableOpacity
@@ -30,13 +42,13 @@ const OrderListItem = ({
     >
       {/* Avatar - Figma: 46x46 circle */}
       <View style={[styles.avatar, { backgroundColor: getInitialsBg() }]}>
-        <Text style={styles.initials}>{initials}</Text>
+        <Text style={styles.initials}>{computedInitials}</Text>
       </View>
 
       {/* Content */}
       <View style={styles.content}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.orderId}>{orderId}</Text>
+        <Text style={styles.name} numberOfLines={1}>{name}</Text>
+        <Text style={styles.orderId} numberOfLines={1}>{subtitle}</Text>
       </View>
 
       {/* Right: status dot + chevron */}

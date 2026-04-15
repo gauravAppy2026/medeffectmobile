@@ -59,11 +59,26 @@ const OrdersScreen = ({ navigation, route }) => {
   const onRefresh = () => { setRefreshing(true); fetchOrders(activeTab); };
 
   const renderItem = ({ item }) => {
-    const name = item.patientName || `${item.patient?.firstName || ''} ${item.patient?.lastName || ''}`;
+    const providerName = item.doctor
+      ? `${item.doctor.firstName || ''} ${item.doctor.lastName || ''}`.trim()
+      : '';
+    const patientName = (item.patientName ||
+      `${item.patient?.firstName || ''} ${item.patient?.lastName || ''}`.trim()).trim();
+    const displayName = providerName
+      ? `${providerName}${patientName ? ', ' + patientName : ''}`
+      : (patientName || 'Order');
+    let dateStr = '';
+    if (item.createdAt) {
+      const d = new Date(item.createdAt);
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      dateStr = `${mm}/${dd}/${d.getFullYear()}`;
+    }
     return (
       <OrderListItem
-        name={name}
+        name={displayName}
         orderId={item.orderId}
+        date={dateStr}
         statusColor={STATUS_COLORS[item.status]}
         status={item.status}
         onPress={() => navigation.navigate('OrderDetails', { orderId: item._id })}
