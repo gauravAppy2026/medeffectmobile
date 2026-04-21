@@ -4,7 +4,7 @@ import { storage } from '../utils/storage';
 
 // ── Production API URL ──
 // Update this to your deployed backend URL before building for production//__DEV__
-const PRODUCTION_API_URL = 'https://medeffects-backend-qkgk.onrender.com/api';
+const PRODUCTION_API_URL = 'https://medeffectbackend.onrender.com/api';
 
 // For physical devices in dev, replace with your Mac's local IP (e.g. 192.168.x.x)
 const DEV_MACHINE_IP = 'localhost';
