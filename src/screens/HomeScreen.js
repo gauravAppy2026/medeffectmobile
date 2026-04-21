@@ -21,6 +21,15 @@ const shippingIcon = require('../assets/icons/shipping.png');
 const taskAltIcon = require('../assets/icons/task_alt.png');
 const cancelIcon = require('../assets/icons/cancel.png');
 
+const STATUS_COLORS = {
+  submitted: '#FFB020',
+  approved: '#0089FF',
+  shipped: '#4CAF50',
+  completed: '#4CAF50',
+  cancelled: '#FF4D6A',
+  rejected: '#FF4D6A',
+};
+
 const HomeScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [recentOrders, setRecentOrders] = useState([]);
@@ -175,7 +184,7 @@ const HomeScreen = ({ navigation }) => {
                   name={displayName}
                   orderId={order.orderId}
                   date={dateStr}
-                  status={order.status}
+                  statusColor={STATUS_COLORS[order.status]}
                   onPress={() => navigation.navigate('OrderDetails', { orderId: order._id })}
                 />
               );
